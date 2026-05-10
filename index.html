@@ -9,18 +9,20 @@
 
 body{
     margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#0d0d0d;
+    background:#0f0f0f;
     color:white;
+    font-family:Arial;
 }
 
 header{
-    background:linear-gradient(to right,#ff4500,#ff0000);
+    background:linear-gradient(to right,#ff3c00,#ff0000);
     padding:30px;
     text-align:center;
-    font-size:40px;
-    font-weight:bold;
-    letter-spacing:2px;
+}
+
+header h1{
+    margin:0;
+    font-size:50px;
 }
 
 .container{
@@ -30,17 +32,10 @@ header{
 }
 
 .section{
-    background:#1a1a1a;
+    background:#1f1f1f;
+    padding:25px;
     border-radius:20px;
-    padding:20px;
     margin-bottom:25px;
-    box-shadow:0 0 20px rgba(0,0,0,0.5);
-}
-
-.section h2{
-    margin-top:0;
-    color:orange;
-    font-size:32px;
 }
 
 .grid{
@@ -50,9 +45,9 @@ header{
 }
 
 .card{
-    background:#262626;
-    border-radius:20px;
+    background:#2b2b2b;
     padding:20px;
+    border-radius:20px;
 }
 
 input{
@@ -61,36 +56,33 @@ input{
     margin-top:10px;
     border:none;
     border-radius:10px;
-    background:#333;
+    background:#444;
     color:white;
-    font-size:16px;
 }
 
 button{
-    margin-top:15px;
-    padding:14px;
     width:100%;
+    padding:12px;
+    margin-top:15px;
     border:none;
-    border-radius:12px;
+    border-radius:10px;
     background:red;
     color:white;
-    font-size:18px;
     font-weight:bold;
     cursor:pointer;
 }
 
 button:hover{
-    background:#ff3300;
+    background:#ff5500;
 }
 
-.big-scoreboard{
+.scoreboard{
     display:flex;
     justify-content:space-between;
     align-items:center;
     background:black;
-    padding:30px;
     border-radius:25px;
-    margin-top:20px;
+    padding:30px;
 }
 
 .team{
@@ -98,56 +90,28 @@ button:hover{
     width:40%;
 }
 
-.team h1{
-    font-size:45px;
-    margin:0;
-}
-
 .score{
-    font-size:90px;
-    font-weight:bold;
+    font-size:80px;
     color:orange;
+    font-weight:bold;
 }
 
 .middle{
     text-align:center;
 }
 
-.stat-box{
-    background:#333;
-    padding:10px;
-    border-radius:10px;
-    margin-top:10px;
-}
-
-.rivalry-card{
-    background:linear-gradient(to right,#8b0000,#ff4500);
+.rivalry{
+    background:linear-gradient(to right,#8b0000,#ff5500);
     padding:20px;
     border-radius:20px;
-}
-
-.leader{
-    background:#2c2c2c;
-    padding:15px;
-    border-radius:15px;
-    margin-top:10px;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
     margin-top:15px;
 }
 
-th,td{
-    padding:12px;
-    text-align:center;
-    border-bottom:1px solid #444;
-}
-
-th{
-    background:#222;
-    color:orange;
+.player{
+    background:#333;
+    padding:15px;
+    border-radius:15px;
+    margin-top:10px;
 }
 
 </style>
@@ -156,34 +120,36 @@ th{
 <body>
 
 <header>
-THUNDER DOME BASKETBALL LEAGUE
+<h1>THUNDER DOME BASKETBALL LEAGUE</h1>
+<p>Basketball Dynasty Simulator</p>
 </header>
 
 <div class="container">
 
-<!-- SCOREBOARD -->
 <div class="section">
 
 <h2>Big Box Scoreboard</h2>
 
-<div class="big-scoreboard">
+<div class="scoreboard">
 
 <div class="team">
-<h1 id="homeName">HOME</h1>
+<h1 id="homeTeam">HOME</h1>
 <div class="score" id="homeScore">0</div>
-<button onclick="homePlus()">+2 Points</button>
+
+<button onclick="addHomePoints()">+2 Points</button>
 <button onclick="homeFT()">+1 Free Throw</button>
 </div>
 
 <div class="middle">
-<h2>VS</h2>
-<h3 id="arena">Thunder Dome Arena</h3>
+<h1>VS</h1>
+<h2>Thunder Dome Arena</h2>
 </div>
 
 <div class="team">
-<h1 id="awayName">AWAY</h1>
+<h1 id="awayTeam">AWAY</h1>
 <div class="score" id="awayScore">0</div>
-<button onclick="awayPlus()">+2 Points</button>
+
+<button onclick="addAwayPoints()">+2 Points</button>
 <button onclick="awayFT()">+1 Free Throw</button>
 </div>
 
@@ -191,7 +157,6 @@ THUNDER DOME BASKETBALL LEAGUE
 
 </div>
 
-<!-- TEAM CREATION -->
 <div class="section">
 
 <h2>Create Teams</h2>
@@ -199,22 +164,29 @@ THUNDER DOME BASKETBALL LEAGUE
 <div class="grid">
 
 <div class="card">
-<h3>Home Team</h3>
-<input type="text" id="homeInput" placeholder="Enter Home Team">
-<button onclick="setHome()">Set Home Team</button>
+
+<input id="homeInput" placeholder="Home Team">
+
+<button onclick="setHomeTeam()">
+Set Home Team
+</button>
+
 </div>
 
 <div class="card">
-<h3>Away Team</h3>
-<input type="text" id="awayInput" placeholder="Enter Away Team">
-<button onclick="setAway()">Set Away Team</button>
-</div>
+
+<input id="awayInput" placeholder="Away Team">
+
+<button onclick="setAwayTeam()">
+Set Away Team
+</button>
 
 </div>
 
 </div>
 
-<!-- PLAYER CREATION -->
+</div>
+
 <div class="section">
 
 <h2>Create Players</h2>
@@ -223,17 +195,19 @@ THUNDER DOME BASKETBALL LEAGUE
 
 <div class="card">
 
-<input type="text" id="playerName" placeholder="Player Name">
-<input type="text" id="playerTeam" placeholder="Team">
-<input type="number" id="playerPPG" placeholder="PPG">
+<input id="playerName" placeholder="Player Name">
+<input id="playerTeam" placeholder="Team">
+<input id="playerPPG" placeholder="PPG">
 
-<button onclick="addPlayer()">Create Player</button>
+<button onclick="createPlayer()">
+Create Player
+</button>
 
 </div>
 
 <div class="card">
 
-<h3>Players</h3>
+<h3>Player List</h3>
 
 <div id="playerList"></div>
 
@@ -243,7 +217,6 @@ THUNDER DOME BASKETBALL LEAGUE
 
 </div>
 
-<!-- RIVALRIES -->
 <div class="section">
 
 <h2>Franchise Rivalries</h2>
@@ -252,12 +225,14 @@ THUNDER DOME BASKETBALL LEAGUE
 
 <div class="card">
 
-<input type="text" id="teamOne" placeholder="Team One">
-<input type="text" id="teamTwo" placeholder="Team Two">
-<input type="number" id="teamOneWins" placeholder="Team One Wins">
-<input type="number" id="teamTwoWins" placeholder="Team Two Wins">
+<input id="teamOne" placeholder="Team One">
+<input id="teamTwo" placeholder="Team Two">
+<input id="winsOne" placeholder="Team One Wins">
+<input id="winsTwo" placeholder="Team Two Wins">
 
-<button onclick="addRivalry()">Add Rivalry</button>
+<button onclick="createRivalry()">
+Create Rivalry
+</button>
 
 </div>
 
@@ -271,95 +246,6 @@ THUNDER DOME BASKETBALL LEAGUE
 
 </div>
 
-<!-- TECHNICAL FOULS -->
-<div class="section">
-
-<h2>Technical Fouls & Ejections</h2>
-
-<table>
-
-<tr>
-<th>Player</th>
-<th>Technical Fouls</th>
-<th>Ejections</th>
-<th>Suspensions</th>
-</tr>
-
-<tr>
-<td>Jaxon Reign</td>
-<td>214</td>
-<td>42</td>
-<td>14</td>
-</tr>
-
-<tr>
-<td>Marcus Steel</td>
-<td>188</td>
-<td>37</td>
-<td>11</td>
-</tr>
-
-<tr>
-<td>Darius Knox</td>
-<td>172</td>
-<td>35</td>
-<td>10</td>
-</tr>
-
-</table>
-
-</div>
-
-<!-- STAT LEADERS -->
-<div class="section">
-
-<h2>Stat Leaders</h2>
-
-<div class="leader">
-🏀 All-Time Scoring Leader — Jaxon Reign — 41,220 Points
-</div>
-
-<div class="leader">
-🎯 Best Free Throw Shooter — Ace Dominion — 95.4%
-</div>
-
-<div class="leader">
-🔥 Most Technical Fouls — Jaxon Reign — 214
-</div>
-
-<div class="leader">
-👑 Most Franchise Wins — Nova Blaze — 2,418 Wins
-</div>
-
-</div>
-
-<!-- PLAYOFF BRACKET -->
-<div class="section">
-
-<h2>Playoff Bracket</h2>
-
-<div class="grid">
-
-<div class="card">
-<h3>Eastern Conference</h3>
-<p>1. Nova Blaze</p>
-<p>2. Skyline Dynasty</p>
-<p>3. Lunar Storm</p>
-<p>4. Inferno Empire</p>
-</div>
-
-<div class="card">
-<h3>Western Conference</h3>
-<p>1. Thunder Reapers</p>
-<p>2. Steel City Titans</p>
-<p>3. Solar Knights</p>
-<p>4. Phantom Force</p>
-</div>
-
-</div>
-
-</div>
-
 </div>
 
 <script>
@@ -367,12 +253,12 @@ THUNDER DOME BASKETBALL LEAGUE
 let homeScore = 0;
 let awayScore = 0;
 
-function homePlus(){
+function addHomePoints(){
     homeScore += 2;
     document.getElementById("homeScore").innerText = homeScore;
 }
 
-function awayPlus(){
+function addAwayPoints(){
     awayScore += 2;
     document.getElementById("awayScore").innerText = awayScore;
 }
@@ -387,49 +273,49 @@ function awayFT(){
     document.getElementById("awayScore").innerText = awayScore;
 }
 
-function setHome(){
-    let home = document.getElementById("homeInput").value;
-    document.getElementById("homeName").innerText = home;
+function setHomeTeam(){
+    let team = document.getElementById("homeInput").value;
+    document.getElementById("homeTeam").innerText = team;
 }
 
-function setAway(){
-    let away = document.getElementById("awayInput").value;
-    document.getElementById("awayName").innerText = away;
+function setAwayTeam(){
+    let team = document.getElementById("awayInput").value;
+    document.getElementById("awayTeam").innerText = team;
 }
 
-function addPlayer(){
+function createPlayer(){
 
     let name = document.getElementById("playerName").value;
     let team = document.getElementById("playerTeam").value;
     let ppg = document.getElementById("playerPPG").value;
 
-    let playerCard = `
-    <div class="stat-box">
-    <h3>${name}</h3>
-    <p>Team: ${team}</p>
-    <p>PPG: ${ppg}</p>
+    let html = `
+    <div class="player">
+        <h3>${name}</h3>
+        <p>Team: ${team}</p>
+        <p>PPG: ${ppg}</p>
     </div>
     `;
 
-    document.getElementById("playerList").innerHTML += playerCard;
+    document.getElementById("playerList").innerHTML += html;
 }
 
-function addRivalry(){
+function createRivalry(){
 
     let one = document.getElementById("teamOne").value;
     let two = document.getElementById("teamTwo").value;
-    let wins1 = document.getElementById("teamOneWins").value;
-    let wins2 = document.getElementById("teamTwoWins").value;
+    let wins1 = document.getElementById("winsOne").value;
+    let wins2 = document.getElementById("winsTwo").value;
 
-    let rivalry = `
-    <div class="rivalry-card">
-    <h2>${one} VS ${two}</h2>
-    <p>${one} Wins: ${wins1}</p>
-    <p>${two} Wins: ${wins2}</p>
+    let html = `
+    <div class="rivalry">
+        <h2>${one} VS ${two}</h2>
+        <p>${one} Wins: ${wins1}</p>
+        <p>${two} Wins: ${wins2}</p>
     </div>
     `;
 
-    document.getElementById("rivalryList").innerHTML += rivalry;
+    document.getElementById("rivalryList").innerHTML += html;
 }
 
 </script>
