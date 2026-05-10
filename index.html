@@ -1,0 +1,1518 @@
+import { useState } from "react";
+
+export default function BasketballHistoryWebsite() {
+  const [players, setPlayers] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [games, setGames] = useState([]);
+  const [banners, setBanners] = useState([]);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [coaches, setCoaches] = useState([]);
+  const [firedCoaches, setFiredCoaches] = useState([]);
+  const [draftProspects, setDraftProspects] = useState([]);
+  const [lotteryResults, setLotteryResults] = useState([]);
+  const [draftHistory, setDraftHistory] = useState([]);
+  const [eastPlayoffTeams, setEastPlayoffTeams] = useState([]);
+  const [westPlayoffTeams, setWestPlayoffTeams] = useState([]);
+  const [rivalries, setRivalries] = useState([]);
+
+  const [rivalryForm, setRivalryForm] = useState({
+    teamOne: "",
+    teamTwo: "",
+    totalMeetings: "",
+    playoffMeetings: "",
+    finalsMatchups: "",
+    technicalFouls: "",
+    intensity: "Competitive",
+  });
+
+  const [playerForm, setPlayerForm] = useState({
+    name: "",
+    team: "",
+    position: "",
+  });
+
+  const [teamName, setTeamName] = useState("");
+
+  const [draftForm, setDraftForm] = useState({
+    name: "",
+    position: "",
+    potential: "",
+    college: "",
+    lotteryRank: "",
+  });
+
+  const [coachForm, setCoachForm] = useState({
+    name: "",
+    team: "",
+    role: "Head Coach",
+    championships: "",
+    wins: "",
+  });
+
+  const [attendanceForm, setAttendanceForm] = useState({
+    team: "",
+    opponent: "",
+    crowd: "",
+    arena: "",
+  });
+
+  const [bannerForm, setBannerForm] = useState({
+    team: "",
+    year: "",
+    finalsMVP: "",
+  });
+
+  const fictionalCourts = [
+  "Thunder Dome",
+  "Legacy Court",
+  "Skyline Center",
+  "Titan Fieldhouse",
+  "Summit Arena",
+  "Velocity Pavilion",
+  "Empire Court",
+  "Phantom Arena",
+];
+
+  const [boxScoreForm, setBoxScoreForm] = useState({
+    homeTeam: "",
+    awayTeam: "",
+    player: "",
+    points: "",
+    rebounds: "",
+    assists: "",
+    technicals: "",
+    court: "",
+  });
+
+  const addTeam = () => {
+    if (!teamName.trim()) return;
+
+    setTeams([...teams, teamName]);
+    setTeamName("");
+  };
+
+  const addDraftProspect = () => {
+    if (!draftForm.name) return;
+
+    setDraftProspects([
+      ...draftProspects,
+      {
+        ...draftForm,
+      },
+    ]);
+
+    setDraftForm({
+      name: "",
+      position: "",
+      potential: "",
+      college: "",
+      lotteryRank: "",
+    });
+  };
+
+  const runDraftLottery = () => {
+    const sortedProspects = [...draftProspects].sort(
+      (a, b) => Number(a.lotteryRank || 99) - Number(b.lotteryRank || 99)
+    );
+
+    setLotteryResults(sortedProspects);
+  };
+
+  const draftPlayer = (prospect, team) => {
+    setPlayers([
+      ...players,
+      {
+        name: prospect.name,
+        team,
+        position: prospect.position,
+        gamesPlayed: 0,
+        totalPoints: 0,
+        totalRebounds: 0,
+        totalAssists: 0,
+      },
+    ]);
+
+    setDraftHistory([
+      ...draftHistory,
+      {
+        ...prospect,
+        draftedTeam: team,
+      },
+    ]);
+
+    setDraftProspects(
+      draftProspects.filter((p) => p.name !== prospect.name)
+    );
+  };
+
+  const fireCoach = (coachName) => {
+    const coachToFire = coaches.find((coach) => coach.name === coachName);
+
+    if (coachToFire) {
+      setFiredCoaches([
+        ...firedCoaches,
+        {
+          ...coachToFire,
+          firedYear: new Date().getFullYear(),
+        },
+      ]);
+    }
+
+    setCoaches(coaches.filter((coach) => coach.name !== coachName));
+  };
+
+  const addCoach = () => {
+    if (!coachForm.name || !coachForm.team) return;
+
+    setCoaches([
+      ...coaches,
+      {
+        ...coachForm,
+      },
+    ]);
+
+    setCoachForm({
+      name: "",
+      team: "",
+      role: "Head Coach",
+      championships: "",
+      wins: "",
+    });
+  };
+
+  const addAttendanceRecord = () => {
+    if (!attendanceForm.team || !attendanceForm.crowd) return;
+
+    setAttendanceRecords([
+      ...attendanceRecords,
+      attendanceForm,
+    ]);
+
+    setAttendanceForm({
+      team: "",
+      opponent: "",
+      crowd: "",
+      arena: "",
+    });
+  };
+
+  const addBanner = () => {
+    if (!bannerForm.team || !bannerForm.year) return;
+
+    setBanners([...banners, bannerForm]);
+
+    setBannerForm({
+      team: "",
+      year: "",
+      finalsMVP: "",
+    });
+  };
+
+  const addPlayer = () => {
+    if (!playerForm.name.trim()) return;
+
+    setPlayers([
+      ...players,
+      {
+        ...playerForm,
+        gamesPlayed: 0,
+        totalPoints: 0,
+        totalRebounds: 0,
+        totalAssists: 0,
+      },
+    ]);
+
+    setPlayerForm({
+      name: "",
+      team: "",
+      position: "",
+    });
+  };
+
+  const importBoxScore = () => {
+    if (!boxScoreForm.player.trim()) return;
+
+    const updatedPlayers = players.map((player) => {
+      if (player.name === boxScoreForm.player) {
+        return {
+          ...player,
+          gamesPlayed: player.gamesPlayed + 1,
+          totalPoints:
+            player.totalPoints + Number(boxScoreForm.points || 0),
+          totalRebounds:
+            player.totalRebounds + Number(boxScoreForm.rebounds || 0),
+          totalAssists:
+            player.totalAssists + Number(boxScoreForm.assists || 0),
+          technicals:
+            (player.technicals || 0) + Number(boxScoreForm.technicals || 0),
+        };
+      }
+
+      return player;
+    });
+
+    setPlayers(updatedPlayers);
+
+    setGames([
+      ...games,
+      {
+        ...boxScoreForm,
+      },
+    ]);
+
+    setBoxScoreForm({
+      homeTeam: "",
+      awayTeam: "",
+      player: "",
+      points: "",
+      rebounds: "",
+      assists: "",
+    technicals: "",
+    court: "",
+    });
+  };
+
+  const addEastTeam = (team) => {
+    if (!team || eastPlayoffTeams.includes(team)) return;
+    setEastPlayoffTeams([...eastPlayoffTeams, team]);
+  };
+
+  const addWestTeam = (team) => {
+    if (!team || westPlayoffTeams.includes(team)) return;
+    setWestPlayoffTeams([...westPlayoffTeams, team]);
+  };
+
+  const addRivalry = () => {
+    if (!rivalryForm.teamOne || !rivalryForm.teamTwo) return;
+
+    setRivalries([
+      ...rivalries,
+      {
+        ...rivalryForm,
+      },
+    ]);
+
+    setRivalryForm({
+      teamOne: "",
+      teamTwo: "",
+      totalMeetings: "",
+      playoffMeetings: "",
+      finalsMatchups: "",
+      technicalFouls: "",
+      intensity: "Competitive",
+    });
+  };
+
+  const statLeaders = [...players]
+    .sort((a, b) => b.totalPoints - a.totalPoints)
+    .slice(0, 5);
+
+  return (
+    <div className="min-h-screen bg-zinc-950 text-white p-6">
+      <div className="max-w-7xl mx-auto space-y-10">
+        <header>
+          <h1 className="text-5xl font-black">
+            Thunder Dome Basketball League
+          </h1>
+          <p className="text-zinc-400 mt-3 text-lg">
+            Build your own basketball universe from scratch.
+          </p>
+        </header>
+
+        <section className="grid md:grid-cols-4 gap-4">
+          <div className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800">
+            <p className="text-zinc-400">Players</p>
+            <h2 className="text-4xl font-bold mt-2">{players.length}</h2>
+          </div>
+
+          <div className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800">
+            <p className="text-zinc-400">Teams</p>
+            <h2 className="text-4xl font-bold mt-2">{teams.length}</h2>
+          </div>
+
+          <div className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800">
+            <p className="text-zinc-400">Games</p>
+            <h2 className="text-4xl font-bold mt-2">{games.length}</h2>
+          </div>
+
+          <div className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800">
+            <p className="text-zinc-400">Stat Leaders</p>
+            <h2 className="text-4xl font-bold mt-2">{statLeaders.length}</h2>
+          </div>
+        </section>
+
+        <section className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800 mb-10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-5xl font-black text-red-500">
+                Franchise Rivalries
+              </h2>
+              <p className="text-zinc-400 mt-3 text-lg">
+                Track legendary franchise wars and total meetings.
+              </p>
+            </div>
+
+            <div className="bg-red-500 text-white px-6 py-3 rounded-2xl font-black text-xl">
+              {rivalries.length} Rivalries
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-7 gap-4 mb-8">
+            <input
+              value={rivalryForm.teamOne}
+              onChange={(e) =>
+                setRivalryForm({ ...rivalryForm, teamOne: e.target.value })
+              }
+              placeholder="Team One"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={rivalryForm.teamTwo}
+              onChange={(e) =>
+                setRivalryForm({ ...rivalryForm, teamTwo: e.target.value })
+              }
+              placeholder="Team Two"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={rivalryForm.totalMeetings}
+              onChange={(e) =>
+                setRivalryForm({ ...rivalryForm, totalMeetings: e.target.value })
+              }
+              placeholder="Total Meetings"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={rivalryForm.playoffMeetings}
+              onChange={(e) =>
+                setRivalryForm({ ...rivalryForm, playoffMeetings: e.target.value })
+              }
+              placeholder="Playoff Meetings"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={rivalryForm.finalsMatchups}
+              onChange={(e) =>
+                setRivalryForm({ ...rivalryForm, finalsMatchups: e.target.value })
+              }
+              placeholder="Finals Matchups"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={rivalryForm.technicalFouls}
+              onChange={(e) =>
+                setRivalryForm({ ...rivalryForm, technicalFouls: e.target.value })
+              }
+              placeholder="Technical Fouls"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={addRivalry}
+              className="bg-red-500 hover:bg-red-600 rounded-2xl font-black"
+            >
+              Add Rivalry
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            {rivalries.map((rivalry, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-br from-red-600 to-orange-700 rounded-3xl p-8 shadow-2xl"
+              >
+                <p className="text-sm font-black tracking-[0.2em] text-red-100">
+                  FRANCHISE WAR
+                </p>
+
+                <h3 className="text-4xl font-black mt-4">
+                  {rivalry.teamOne}
+                </h3>
+
+                <p className="text-2xl font-black text-red-100 mt-2">
+                  VS
+                </p>
+
+                <h3 className="text-4xl font-black mt-2">
+                  {rivalry.teamTwo}
+                </h3>
+
+                <div className="grid grid-cols-2 gap-4 mt-8">
+                  <div className="bg-black/20 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-bold text-red-100">
+                      TOTAL MEETINGS
+                    </p>
+                    <p className="text-5xl font-black mt-2">
+                      {rivalry.totalMeetings || 0}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/20 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-bold text-red-100">
+                      PLAYOFFS
+                    </p>
+                    <p className="text-5xl font-black mt-2">
+                      {rivalry.playoffMeetings || 0}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/20 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-bold text-red-100">
+                      FINALS
+                    </p>
+                    <p className="text-5xl font-black mt-2">
+                      {rivalry.finalsMatchups || 0}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/20 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-bold text-red-100">
+                      TECH FOULS
+                    </p>
+                    <p className="text-5xl font-black mt-2">
+                      {rivalry.technicalFouls || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800">
+          <h2 className="text-3xl font-bold mb-6">Create Team</h2>
+
+          <div className="flex gap-4">
+            <input
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              placeholder="Team Name"
+              className="flex-1 bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={addTeam}
+              className="bg-orange-500 px-6 rounded-2xl font-bold hover:bg-orange-600"
+            >
+              Add Team
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4 mt-6">
+            {teams.map((team, index) => (
+              <div
+                key={index}
+                className="bg-zinc-800 rounded-2xl p-5"
+              >
+                <h3 className="text-2xl font-bold">{team}</h3>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800">
+          <h2 className="text-3xl font-bold mb-2">Create Player</h2>
+          <p className="text-zinc-400 mb-6">
+            Create home or away roster players for your fictional league.
+          </p>
+
+          <div className="grid md:grid-cols-5 gap-4">
+            <input
+              value={playerForm.name}
+              onChange={(e) =>
+                setPlayerForm({ ...playerForm, name: e.target.value })
+              }
+              placeholder="Player Name"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={playerForm.team}
+              onChange={(e) =>
+                setPlayerForm({ ...playerForm, team: e.target.value })
+              }
+              placeholder="Home or Away Team"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={playerForm.position}
+              onChange={(e) =>
+                setPlayerForm({ ...playerForm, position: e.target.value })
+              }
+              placeholder="Position"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={addPlayer}
+              className="bg-orange-500 rounded-2xl font-bold hover:bg-orange-600"
+            >
+              Create Away/Home Player
+            </button>
+          </div>
+        </section>
+
+        <section className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800">
+          <h2 className="text-3xl font-bold mb-6">Manual Box Score</h2>
+
+          <div className="grid md:grid-cols-4 gap-4 mb-4">
+            <input
+              value={boxScoreForm.homeTeam}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  homeTeam: e.target.value,
+                })
+              }
+              placeholder="Home Team"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={boxScoreForm.awayTeam}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  awayTeam: e.target.value,
+                })
+              }
+              placeholder="Away Team"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={boxScoreForm.player}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  player: e.target.value,
+                })
+              }
+              placeholder="Player"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <select
+              value={boxScoreForm.court}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  court: e.target.value,
+                })
+              }
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            >
+              <option value="">Select Court</option>
+              {fictionalCourts.map((court, index) => (
+                <option key={index} value={court}>
+                  {court}
+                </option>
+              ))}
+            </select>
+
+            <input
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-4">
+            <input
+              type="number"
+              value={boxScoreForm.points}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  points: e.target.value,
+                })
+              }
+              placeholder="PTS"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              type="number"
+              value={boxScoreForm.rebounds}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  rebounds: e.target.value,
+                })
+              }
+              placeholder="REB"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              type="number"
+              value={boxScoreForm.assists}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  assists: e.target.value,
+                })
+              }
+              placeholder="AST"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              type="number"
+              value={boxScoreForm.technicals}
+              onChange={(e) =>
+                setBoxScoreForm({
+                  ...boxScoreForm,
+                  technicals: e.target.value,
+                })
+              }
+              placeholder="TECHS"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={importBoxScore}
+              className="bg-orange-500 rounded-2xl font-bold hover:bg-orange-600"
+            >
+              Import Box Score
+            </button>
+          </div>
+        </section>
+
+        <section className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-black text-emerald-400">
+                Draft Class Center
+              </h2>
+              <p className="text-zinc-400 mt-2">
+                Draft lottery, draft night, and prospect tracking for dynasty mode.
+              </p>
+            </div>
+
+            <div className="bg-emerald-400 text-black px-6 py-3 rounded-2xl font-black text-xl">
+              {draftProspects.length} Prospects
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-6 gap-4 mb-8">
+            <input
+              value={draftForm.name}
+              onChange={(e) =>
+                setDraftForm({ ...draftForm, name: e.target.value })
+              }
+              placeholder="Prospect Name"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={draftForm.position}
+              onChange={(e) =>
+                setDraftForm({ ...draftForm, position: e.target.value })
+              }
+              placeholder="Position"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={draftForm.potential}
+              onChange={(e) =>
+                setDraftForm({ ...draftForm, potential: e.target.value })
+              }
+              placeholder="Potential Rating"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={draftForm.college}
+              onChange={(e) =>
+                setDraftForm({ ...draftForm, college: e.target.value })
+              }
+              placeholder="College / Academy"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={draftForm.lotteryRank}
+              onChange={(e) =>
+                setDraftForm({
+                  ...draftForm,
+                  lotteryRank: e.target.value,
+                })
+              }
+              placeholder="Lottery Rank"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={addDraftProspect}
+              className="bg-emerald-400 text-black rounded-2xl font-black hover:bg-emerald-300"
+            >
+              Add Prospect
+            </button>
+          </div>
+
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-3xl font-black text-emerald-400">
+              Draft Lottery Prospects
+            </h3>
+
+            <button
+              onClick={runDraftLottery}
+              className="bg-yellow-400 text-black px-6 py-3 rounded-2xl font-black hover:bg-yellow-300"
+            >
+              Run Draft Lottery
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            {draftProspects.map((prospect, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-br from-emerald-500 to-green-700 rounded-3xl p-8 shadow-2xl"
+              >
+                <p className="text-sm font-black tracking-[0.2em] text-emerald-100">
+                  DRAFT LOTTERY PROSPECT
+                </p>
+
+                <h3 className="text-4xl font-black mt-4">
+                  {prospect.name}
+                </h3>
+
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  <div className="bg-black/20 rounded-2xl p-4">
+                    <p className="text-sm font-bold text-emerald-100">
+                      POSITION
+                    </p>
+                    <p className="text-2xl font-black mt-2">
+                      {prospect.position}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/20 rounded-2xl p-4">
+                    <p className="text-sm font-bold text-emerald-100">
+                      POTENTIAL
+                    </p>
+                    <p className="text-2xl font-black mt-2">
+                      {prospect.potential}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 bg-black/20 rounded-2xl p-4">
+                  <p className="text-sm font-bold text-emerald-100">
+                    LOTTERY PROJECTION
+                  </p>
+                  <p className="text-4xl font-black mt-2">
+                    #{prospect.lotteryRank || "--"}
+                  </p>
+                </div>
+
+                <p className="mt-6 text-lg text-emerald-100 font-bold">
+                  {prospect.college}
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-3 mt-8">
+                  {teams.map((team, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => draftPlayer(prospect, team)}
+                      className="bg-black/30 hover:bg-black/50 rounded-2xl py-3 font-black"
+                    >
+                      Draft to {team}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => fireCoach(coach.name)}
+                  className="w-full mt-8 bg-red-500 hover:bg-red-600 text-white py-4 rounded-2xl font-black text-xl"
+                >
+                  Fire Coach
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mb-10">
+            <h3 className="text-3xl font-black text-yellow-400 mb-6">
+              Draft Lottery Results
+            </h3>
+
+            <div className="space-y-4 mb-10">
+              {lotteryResults.map((prospect, index) => (
+                <div
+                  key={index}
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black rounded-3xl p-6 flex items-center justify-between shadow-2xl"
+                >
+                  <div>
+                    <p className="font-black tracking-[0.2em] text-sm">
+                      LOTTERY PICK #{index + 1}
+                    </p>
+                    <h4 className="text-4xl font-black mt-2">
+                      {prospect.name}
+                    </h4>
+                    <p className="font-bold mt-2">
+                      {prospect.position} • {prospect.college}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/10 rounded-2xl px-6 py-4 text-center">
+                    <p className="text-sm font-black">POTENTIAL</p>
+                    <p className="text-4xl font-black mt-2">
+                      {prospect.potential}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <h3 className="text-3xl font-black text-emerald-400 mb-6">
+              Draft Night History
+            </h3>
+
+            <div className="space-y-4">
+              {draftHistory.map((pick, index) => (
+                <div
+                  key={index}
+                  className="bg-zinc-800 rounded-3xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                >
+                  <div>
+                    <p className="text-zinc-400 text-sm">DRAFT PICK</p>
+                    <h4 className="text-3xl font-black mt-2">
+                      {pick.name}
+                    </h4>
+                    <p className="text-zinc-400 mt-1">
+                      {pick.position} • {pick.college}
+                    </p>
+                  </div>
+
+                  <div className="bg-emerald-400 text-black rounded-2xl px-6 py-4 text-center font-black">
+                    {pick.draftedTeam}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-black text-purple-400">
+                Coach Careers
+              </h2>
+              <p className="text-zinc-400 mt-2">
+                Build legendary coaching dynasties in Thunder Dome Basketball League.
+              </p>
+            </div>
+
+            <div className="bg-purple-400 text-black px-6 py-3 rounded-2xl font-black text-xl">
+              {coaches.length} Coaches
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-6 gap-4 mb-8">
+            <input
+              value={coachForm.name}
+              onChange={(e) =>
+                setCoachForm({ ...coachForm, name: e.target.value })
+              }
+              placeholder="Coach Name"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={coachForm.team}
+              onChange={(e) =>
+                setCoachForm({ ...coachForm, team: e.target.value })
+              }
+              placeholder="Team"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <select
+              value={coachForm.role}
+              onChange={(e) =>
+                setCoachForm({ ...coachForm, role: e.target.value })
+              }
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            >
+              <option>Head Coach</option>
+              <option>Assistant Coach</option>
+              <option>Defensive Coach</option>
+              <option>Offensive Coach</option>
+              <option>Development Coach</option>
+            </select>
+
+            <input
+              value={coachForm.championships}
+              onChange={(e) =>
+                setCoachForm({
+                  ...coachForm,
+                  championships: e.target.value,
+                })
+              }
+              placeholder="Championships"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={coachForm.wins}
+              onChange={(e) =>
+                setCoachForm({ ...coachForm, wins: e.target.value })
+              }
+              placeholder="Career Wins"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={addCoach}
+              className="bg-purple-400 text-black rounded-2xl font-black hover:bg-purple-300"
+            >
+              Add Coach
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            {coaches.map((coach, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-br from-purple-500 to-indigo-700 rounded-3xl p-8 shadow-2xl"
+              >
+                <p className="text-sm font-black tracking-[0.2em] text-purple-100">
+                  HALL OF FAME COACH
+                </p>
+
+                <h3 className="text-4xl font-black mt-4">
+                  {coach.name}
+                </h3>
+
+                <p className="text-xl text-purple-100 mt-2">
+                  {coach.team}
+                </p>
+
+                <div className="mt-4 inline-block bg-black/20 rounded-2xl px-4 py-2 font-black text-purple-100">
+                  {coach.role}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-8">
+                  <div className="bg-black/20 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-bold text-purple-100">
+                      TITLES
+                    </p>
+                    <p className="text-5xl font-black mt-2">
+                      {coach.championships || 0}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/20 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-bold text-purple-100">
+                      WINS
+                    </p>
+                    <p className="text-5xl font-black mt-2">
+                      {coach.wins || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-black">Big Box Scoreboard</h2>
+              <p className="text-zinc-400 mt-2">
+                Live fictional game center with full roster and stat tracking.
+              </p>
+            </div>
+
+            <div className="bg-orange-500 text-black px-6 py-3 rounded-2xl font-black text-xl">
+              {games.length} Games Logged
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {games.map((game, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-3xl p-8 border border-zinc-700 shadow-2xl"
+              >
+                <div className="bg-black/40 border border-zinc-700 rounded-3xl p-5 mb-8">
+                  <p className="text-zinc-400 text-sm mb-2">COURT NAME</p>
+                  <h3 className="text-4xl font-black text-green-400">
+                    {game.court || "Unknown Arena"}
+                  </h3>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                  <div className="bg-zinc-900 p-5 rounded-2xl">
+                    <p className="text-zinc-400 text-sm">HOME TEAM</p>
+                    <h3 className="text-5xl font-black text-orange-400 mt-3 tracking-wide">
+                      {game.homeTeam}
+                    </h3>
+                  </div>
+
+                  <div className="bg-zinc-900 p-5 rounded-2xl">
+                    <p className="text-zinc-400 text-sm">AWAY TEAM</p>
+                    <h3 className="text-5xl font-black text-blue-400 mt-3 tracking-wide">
+                      {game.awayTeam}
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="bg-black/30 rounded-3xl p-6 border border-zinc-700 overflow-x-auto">
+                <table className="w-full text-left text-lg">
+                  <thead>
+                    <tr className="border-b border-zinc-700 text-zinc-400">
+                      <th className="pb-3">Player</th>
+                      <th className="pb-3">PTS</th>
+                      <th className="pb-3">REB</th>
+                      <th className="pb-3">AST</th>
+                      <th className="pb-3 text-red-400">TECH</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td className="py-4 font-bold">{game.player}</td>
+                      <td>{game.points}</td>
+                      <td>{game.rebounds}</td>
+                      <td>{game.assists}</td>
+                      <td className="text-red-400 font-black">
+                        {game.technicals || 0}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 mt-8">
+                  <div>
+                    <h4 className="text-2xl font-black text-orange-400 mb-4">
+                      {game.homeTeam} Roster
+                    </h4>
+
+                    <div className="space-y-2">
+                      {players
+                        .filter((p) => p.team === game.homeTeam)
+                        .map((player, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-zinc-900 rounded-xl p-3 flex justify-between"
+                          >
+                            <span>{player.name}</span>
+                            <span className="text-zinc-400">
+                              {player.position}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-2xl font-black text-blue-400 mb-4">
+                      {game.awayTeam} Roster
+                    </h4>
+
+                    <div className="space-y-2">
+                      {players
+                        .filter((p) => p.team === game.awayTeam)
+                        .map((player, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-zinc-900 rounded-xl p-3 flex justify-between"
+                          >
+                            <span>{player.name}</span>
+                            <span className="text-zinc-400">
+                              {player.position}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        <div className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-4xl font-black text-red-400">
+                  Coaching Turnover System
+                </h2>
+                <p className="text-zinc-400 mt-2">
+                  Track fired coaches, rebuilding franchises, and coaching changes.
+                </p>
+              </div>
+
+              <div className="bg-red-500 text-white px-6 py-3 rounded-2xl font-black text-xl">
+                {firedCoaches.length} Fired Coaches
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {firedCoaches.map((coach, index) => (
+                <div
+                  key={index}
+                  className="bg-gradient-to-br from-red-600 to-red-800 rounded-3xl p-8 shadow-2xl"
+                >
+                  <p className="text-sm font-black tracking-[0.2em] text-red-100">
+                    FRANCHISE RESET
+                  </p>
+
+                  <h3 className="text-4xl font-black mt-4">
+                    {coach.name}
+                  </h3>
+
+                  <p className="text-xl text-red-100 mt-2">
+                    {coach.team}
+                  </p>
+
+                  <div className="mt-4 inline-block bg-black/20 rounded-2xl px-4 py-2 font-black text-red-100">
+                    {coach.role}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mt-8">
+                    <div className="bg-black/20 rounded-2xl p-4 text-center">
+                      <p className="text-sm font-bold text-red-100">
+                        CAREER WINS
+                      </p>
+                      <p className="text-5xl font-black mt-2">
+                        {coach.wins || 0}
+                      </p>
+                    </div>
+
+                    <div className="bg-black/20 rounded-2xl p-4 text-center">
+                      <p className="text-sm font-bold text-red-100">
+                        FIRED YEAR
+                      </p>
+                      <p className="text-5xl font-black mt-2">
+                        {coach.firedYear}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800 mb-10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-5xl font-black text-red-400">
+                Conference Playoffs
+              </h2>
+              <p className="text-zinc-400 mt-3 text-lg">
+                Build playoff brackets and dynasty championship runs.
+              </p>
+            </div>
+
+            <div className="bg-red-400 text-black px-6 py-3 rounded-2xl font-black text-xl">
+              Thunder Dome Playoffs
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-10">
+            <div className="bg-gradient-to-b from-blue-600 to-cyan-700 rounded-3xl p-8 shadow-2xl">
+              <h3 className="text-4xl font-black mb-6">
+                Eastern Conference
+              </h3>
+
+              <div className="space-y-4">
+                {eastPlayoffTeams.map((team, index) => (
+                  <div
+                    key={index}
+                    className="bg-black/20 rounded-2xl p-4 flex items-center justify-between"
+                  >
+                    <span className="text-2xl font-black">
+                      #{index + 1} {team}
+                    </span>
+
+                    <span className="bg-white text-black px-4 py-2 rounded-xl font-black">
+                      PLAYOFF TEAM
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mt-8">
+                {teams.map((team, index) => (
+                  <button
+                    key={index}
+                    onClick={() => addEastTeam(team)}
+                    className="bg-black/30 hover:bg-black/50 rounded-2xl py-3 font-black"
+                  >
+                    Add {team}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-b from-orange-500 to-red-700 rounded-3xl p-8 shadow-2xl">
+              <h3 className="text-4xl font-black mb-6">
+                Western Conference
+              </h3>
+
+              <div className="space-y-4">
+                {westPlayoffTeams.map((team, index) => (
+                  <div
+                    key={index}
+                    className="bg-black/20 rounded-2xl p-4 flex items-center justify-between"
+                  >
+                    <span className="text-2xl font-black">
+                      #{index + 1} {team}
+                    </span>
+
+                    <span className="bg-white text-black px-4 py-2 rounded-xl font-black">
+                      PLAYOFF TEAM
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mt-8">
+                {teams.map((team, index) => (
+                  <button
+                    key={index}
+                    onClick={() => addWestTeam(team)}
+                    className="bg-black/30 hover:bg-black/50 rounded-2xl py-3 font-black"
+                  >
+                    Add {team}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-3xl p-10 text-black shadow-2xl mb-10">
+            <p className="text-sm font-black tracking-[0.3em]">
+              THUNDER DOME FINALS
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6 items-center mt-8">
+              <div className="bg-black/10 rounded-3xl p-6 text-center">
+                <p className="font-black text-sm">EAST CHAMPION</p>
+                <h3 className="text-4xl font-black mt-4">
+                  {eastPlayoffTeams[0] || "TBD"}
+                </h3>
+              </div>
+
+              <div className="text-center">
+                <p className="text-7xl font-black">VS</p>
+              </div>
+
+              <div className="bg-black/10 rounded-3xl p-6 text-center">
+                <p className="font-black text-sm">WEST CHAMPION</p>
+                <h3 className="text-4xl font-black mt-4">
+                  {westPlayoffTeams[0] || "TBD"}
+                </h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-black text-cyan-400">
+                Attendance Records
+              </h2>
+              <p className="text-zinc-400 mt-2">
+                Track the biggest crowds in Thunder Dome Basketball League history.
+              </p>
+            </div>
+
+            <div className="bg-cyan-400 text-black px-6 py-3 rounded-2xl font-black text-xl">
+              {attendanceRecords.length} Crowd Records
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-5 gap-4 mb-8">
+            <input
+              value={attendanceForm.team}
+              onChange={(e) =>
+                setAttendanceForm({ ...attendanceForm, team: e.target.value })
+              }
+              placeholder="Home Team"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={attendanceForm.opponent}
+              onChange={(e) =>
+                setAttendanceForm({
+                  ...attendanceForm,
+                  opponent: e.target.value,
+                })
+              }
+              placeholder="Opponent"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={attendanceForm.crowd}
+              onChange={(e) =>
+                setAttendanceForm({ ...attendanceForm, crowd: e.target.value })
+              }
+              placeholder="Attendance"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={attendanceForm.arena}
+              onChange={(e) =>
+                setAttendanceForm({ ...attendanceForm, arena: e.target.value })
+              }
+              placeholder="Arena"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={addAttendanceRecord}
+              className="bg-cyan-400 text-black rounded-2xl font-black hover:bg-cyan-300"
+            >
+              Add Crowd Record
+            </button>
+          </div>
+
+          <div className="space-y-4 mb-10">
+            {attendanceRecords.map((record, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl p-6 text-black shadow-2xl"
+              >
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-black tracking-[0.2em]">
+                      ATTENDANCE RECORD
+                    </p>
+
+                    <h3 className="text-4xl font-black mt-3">
+                      {record.team} vs {record.opponent}
+                    </h3>
+
+                    <p className="text-xl font-bold mt-2">
+                      {record.arena}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/10 rounded-3xl px-8 py-6 text-center">
+                    <p className="text-sm font-black">CROWD SIZE</p>
+                    <p className="text-6xl font-black mt-2">
+                      {record.crowd}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-black text-yellow-400">
+                Championship Banners
+              </h2>
+              <p className="text-zinc-400 mt-2">
+                Track your fictional league champions and dynasties.
+              </p>
+            </div>
+
+            <div className="bg-yellow-400 text-black px-6 py-3 rounded-2xl font-black text-xl">
+              {banners.length} Championships
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-4 mb-8">
+            <input
+              value={bannerForm.team}
+              onChange={(e) =>
+                setBannerForm({ ...bannerForm, team: e.target.value })
+              }
+              placeholder="Champion Team"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={bannerForm.year}
+              onChange={(e) =>
+                setBannerForm({ ...bannerForm, year: e.target.value })
+              }
+              placeholder="Championship Year"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              value={bannerForm.finalsMVP}
+              onChange={(e) =>
+                setBannerForm({
+                  ...bannerForm,
+                  finalsMVP: e.target.value,
+                })
+              }
+              placeholder="Finals MVP"
+              className="bg-zinc-800 rounded-2xl px-4 py-3"
+            />
+
+            <button
+              onClick={addBanner}
+              className="bg-yellow-400 text-black rounded-2xl font-black hover:bg-yellow-300"
+            >
+              Hang Banner
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            {banners.map((banner, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-b from-yellow-500 to-yellow-700 text-black rounded-3xl p-8 shadow-2xl border-4 border-yellow-300"
+              >
+                <p className="text-sm font-black tracking-[0.3em]">
+                  WORLD CHAMPIONS
+                </p>
+
+                <h3 className="text-4xl font-black mt-6">
+                  {banner.team}
+                </h3>
+
+                <p className="text-7xl font-black mt-8">
+                  {banner.year}
+                </p>
+
+                <div className="mt-8 bg-black/10 rounded-2xl p-4">
+                  <p className="text-sm font-bold">FINALS MVP</p>
+                  <p className="text-2xl font-black mt-2">
+                    {banner.finalsMVP || "Unknown"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <h2 className="text-3xl font-bold mb-6">Stat Leaders</h2>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            {statLeaders.map((player, index) => (
+              <div
+                key={index}
+                className="bg-zinc-800 rounded-2xl p-6"
+              >
+                <p className="text-zinc-400">Total Points</p>
+                <h3 className="text-3xl font-bold mt-2">
+                  {player.name}
+                </h3>
+                <p className="text-orange-400 text-5xl font-black mt-4">
+                  {player.totalPoints}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
