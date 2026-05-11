@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Thunder Dome Basketball League</title>
 
 <style>
@@ -52,7 +53,7 @@ header p{
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
     gap:20px;
 }
 
@@ -62,7 +63,7 @@ header p{
     padding:20px;
 }
 
-input, select{
+input{
     width:100%;
     padding:14px;
     margin-top:12px;
@@ -85,115 +86,112 @@ button{
     font-size:17px;
     font-weight:bold;
     cursor:pointer;
+    transition:0.2s;
 }
 
 button:hover{
     background:#ff5500;
 }
 
-.scoreboard{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:black;
-    border-radius:25px;
-    padding:30px;
-}
-
-.team{
-    width:40%;
-    text-align:center;
-}
-
-.team h1{
-    font-size:42px;
-}
-
-.score{
-    font-size:90px;
-    color:orange;
-    font-weight:bold;
-}
-
-.middle{
-    text-align:center;
-}
-
-.player-card{
-    background:#333;
-    padding:15px;
-    border-radius:15px;
-    margin-top:10px;
-}
-
-.rivalry-card{
-    background:linear-gradient(to right,#8b0000,#ff5500);
-    padding:20px;
-    border-radius:20px;
-    margin-top:15px;
-}
-
 .coach-card{
-    background:#2f2f2f;
-    padding:20px;
+    background:#333;
     border-radius:20px;
+    padding:20px;
     margin-top:15px;
     border-left:6px solid orange;
 }
 
-.coach-card h3{
-    margin-top:0;
-    color:orange;
+.coach-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
 }
 
-.coach-stats{
+.coach-header h3{
+    margin:0;
+    color:orange;
+    font-size:28px;
+}
+
+.dropdown-btn{
+    background:#444;
+    width:auto;
+    padding:10px 15px;
+    font-size:14px;
+}
+
+.coach-body{
+    display:none;
+    margin-top:20px;
+}
+
+.stat-grid{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:10px;
-    margin-top:15px;
+    gap:15px;
 }
 
 .stat-box{
     background:#444;
-    padding:12px;
-    border-radius:12px;
+    border-radius:15px;
+    padding:15px;
     text-align:center;
 }
 
+.stat-box h4{
+    margin-top:0;
+    color:orange;
+}
+
+.stat-number{
+    font-size:40px;
+    font-weight:bold;
+    margin:10px 0;
+}
+
 .small-buttons{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
+    display:flex;
     gap:10px;
-    margin-top:15px;
 }
 
 .small-buttons button{
+    margin-top:0;
     padding:10px;
     font-size:14px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
+.plus-btn{
+    background:green;
 }
 
-th, td{
-    padding:12px;
-    text-align:center;
-    border-bottom:1px solid #444;
+.plus-btn:hover{
+    background:#00aa00;
 }
 
-th{
-    background:#222;
-    color:orange;
+.minus-btn{
+    background:#8b0000;
 }
 
-.leader{
-    background:#333;
-    padding:15px;
-    border-radius:15px;
-    margin-top:10px;
+.minus-btn:hover{
+    background:#cc0000;
+}
+
+.delete-btn{
+    margin-top:20px;
+    background:#550000;
+}
+
+.delete-btn:hover{
+    background:#aa0000;
+}
+
+@media(max-width:700px){
+
+    .stat-grid{
+        grid-template-columns:1fr;
+    }
+
 }
 
 </style>
@@ -202,348 +200,49 @@ th{
 <body>
 
 <header>
-<h1>THUNDER DOME BASKETBALL LEAGUE</h1>
-<p>Basketball Dynasty Simulator</p>
+    <h1>THUNDER DOME BASKETBALL LEAGUE</h1>
+    <p>Coaching Legacy Tracker</p>
 </header>
 
 <div class="container">
 
-<!-- SCOREBOARD -->
+    <div class="section">
 
-<div class="section">
+        <h2>Coach Legacy System</h2>
 
-<h2>Big Box Scoreboard</h2>
+        <div class="grid">
 
-<div class="scoreboard">
+            <div class="card">
 
-<div class="team">
+                <h3>Create Coach</h3>
 
-<h1 id="homeTeam">HOME</h1>
+                <input 
+                    type="text" 
+                    id="coachName" 
+                    placeholder="Enter Coach Name"
+                >
 
-<div class="score" id="homeScore">0</div>
+                <button onclick="createCoach()">
+                    Add Coach
+                </button>
 
-<button onclick="homePlus()">+2 Points</button>
-<button onclick="homeFT()">+1 Free Throw</button>
+            </div>
 
-</div>
+            <div class="card">
 
-<div class="middle">
+                <h3>Coach Database</h3>
 
-<h1>VS</h1>
+                <div id="coachList"></div>
 
-<h2>Thunder Dome Arena</h2>
+            </div>
 
-</div>
+        </div>
 
-<div class="team">
-
-<h1 id="awayTeam">AWAY</h1>
-
-<div class="score" id="awayScore">0</div>
-
-<button onclick="awayPlus()">+2 Points</button>
-<button onclick="awayFT()">+1 Free Throw</button>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- TEAM CREATION -->
-
-<div class="section">
-
-<h2>Create Teams</h2>
-
-<div class="grid">
-
-<div class="card">
-
-<input id="homeInput" placeholder="Home Team">
-
-<button onclick="setHomeTeam()">
-Set Home Team
-</button>
-
-</div>
-
-<div class="card">
-
-<input id="awayInput" placeholder="Away Team">
-
-<button onclick="setAwayTeam()">
-Set Away Team
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- PLAYER CREATION -->
-
-<div class="section">
-
-<h2>Create Players</h2>
-
-<div class="grid">
-
-<div class="card">
-
-<input id="playerName" placeholder="Player Name">
-<input id="playerTeam" placeholder="Team">
-<input id="playerPPG" placeholder="PPG">
-
-<button onclick="createPlayer()">
-Create Player
-</button>
-
-</div>
-
-<div class="card">
-
-<h3>Players</h3>
-
-<div id="playerList"></div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- RIVALRIES -->
-
-<div class="section">
-
-<h2>Franchise Rivalries</h2>
-
-<div class="grid">
-
-<div class="card">
-
-<input id="teamOne" placeholder="Team One">
-<input id="teamTwo" placeholder="Team Two">
-<input id="winsOne" placeholder="Team One Wins">
-<input id="winsTwo" placeholder="Team Two Wins">
-
-<button onclick="createRivalry()">
-Create Rivalry
-</button>
-
-</div>
-
-<div class="card">
-
-<div id="rivalryList"></div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- COACH CAREERS -->
-
-<div class="section">
-
-<h2>Coach Careers</h2>
-
-<div class="grid">
-
-<div class="card">
-
-<input id="coachName" placeholder="Coach Name">
-
-<button onclick="createCoach()">
-Create Coach
-</button>
-
-</div>
-
-<div class="card">
-
-<h3>Coach Career Tracker</h3>
-
-<div id="coachList"></div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- TECHNICAL FOULS -->
-
-<div class="section">
-
-<h2>Technical Fouls & Ejections</h2>
-
-<table>
-
-<tr>
-<th>Player</th>
-<th>Technical Fouls</th>
-<th>Ejections</th>
-<th>Suspensions</th>
-</tr>
-
-<tr>
-<td>Jaxon Reign</td>
-<td>214</td>
-<td>42</td>
-<td>14</td>
-</tr>
-
-<tr>
-<td>Marcus Steel</td>
-<td>188</td>
-<td>37</td>
-<td>11</td>
-</tr>
-
-<tr>
-<td>Darius Knox</td>
-<td>172</td>
-<td>35</td>
-<td>10</td>
-</tr>
-
-</table>
-
-</div>
-
-<!-- STAT LEADERS -->
-
-<div class="section">
-
-<h2>Stat Leaders</h2>
-
-<div class="leader">
-🏀 All-Time Scoring Leader — Jaxon Reign — 41,220 Points
-</div>
-
-<div class="leader">
-🎯 Best Free Throw Shooter — Ace Dominion — 95.4%
-</div>
-
-<div class="leader">
-🔥 Most Technical Fouls — Jaxon Reign — 214
-</div>
-
-<div class="leader">
-👑 Most Franchise Wins — Nova Blaze — 2,418 Wins
-</div>
-
-</div>
-
-<!-- PLAYOFF BRACKET -->
-
-<div class="section">
-
-<h2>Playoff Bracket</h2>
-
-<div class="grid">
-
-<div class="card">
-
-<h3>Eastern Conference</h3>
-
-<p>1. Nova Blaze</p>
-<p>2. Skyline Dynasty</p>
-<p>3. Lunar Storm</p>
-<p>4. Inferno Empire</p>
-
-</div>
-
-<div class="card">
-
-<h3>Western Conference</h3>
-
-<p>1. Thunder Reapers</p>
-<p>2. Steel City Titans</p>
-<p>3. Solar Knights</p>
-<p>4. Phantom Force</p>
-
-</div>
-
-</div>
-
-</div>
+    </div>
 
 </div>
 
 <script>
-
-let homeScore = 0;
-let awayScore = 0;
-
-function homePlus(){
-    homeScore += 2;
-    document.getElementById("homeScore").innerText = homeScore;
-}
-
-function awayPlus(){
-    awayScore += 2;
-    document.getElementById("awayScore").innerText = awayScore;
-}
-
-function homeFT(){
-    homeScore += 1;
-    document.getElementById("homeScore").innerText = homeScore;
-}
-
-function awayFT(){
-    awayScore += 1;
-    document.getElementById("awayScore").innerText = awayScore;
-}
-
-function setHomeTeam(){
-    let team = document.getElementById("homeInput").value;
-    document.getElementById("homeTeam").innerText = team;
-}
-
-function setAwayTeam(){
-    let team = document.getElementById("awayInput").value;
-    document.getElementById("awayTeam").innerText = team;
-}
-
-function createPlayer(){
-
-    let name = document.getElementById("playerName").value;
-    let team = document.getElementById("playerTeam").value;
-    let ppg = document.getElementById("playerPPG").value;
-
-    let html = `
-    <div class="player-card">
-        <h3>${name}</h3>
-        <p>Team: ${team}</p>
-        <p>PPG: ${ppg}</p>
-    </div>
-    `;
-
-    document.getElementById("playerList").innerHTML += html;
-}
-
-function createRivalry(){
-
-    let one = document.getElementById("teamOne").value;
-    let two = document.getElementById("teamTwo").value;
-    let wins1 = document.getElementById("winsOne").value;
-    let wins2 = document.getElementById("winsTwo").value;
-
-    let html = `
-    <div class="rivalry-card">
-        <h2>${one} VS ${two}</h2>
-        <p>${one} Wins: ${wins1}</p>
-        <p>${two} Wins: ${wins2}</p>
-    </div>
-    `;
-
-    document.getElementById("rivalryList").innerHTML += html;
-}
 
 let coaches = [];
 
@@ -551,54 +250,61 @@ function createCoach(){
 
     let name = document.getElementById("coachName").value;
 
-    if(name === ""){
+    if(name.trim() === ""){
         return;
     }
 
     let coach = {
         id: Date.now(),
-        name:name,
-        wins:0,
-        losses:0,
-        championships:0
+        name: name,
+        wins: 0,
+        losses: 0,
+        championships: 0,
+        open: false
     };
 
     coaches.push(coach);
 
-    renderCoaches();
-
     document.getElementById("coachName").value = "";
+
+    renderCoaches();
 }
 
-function addCoachWin(id){
+function toggleCoach(id){
 
     coaches.forEach(coach => {
+
         if(coach.id === id){
-            coach.wins++;
+            coach.open = !coach.open;
         }
+
     });
 
     renderCoaches();
 }
 
-function addCoachLoss(id){
+function changeStat(id, stat, amount){
 
     coaches.forEach(coach => {
+
         if(coach.id === id){
-            coach.losses++;
+
+            coach[stat] += amount;
+
+            if(coach[stat] < 0){
+                coach[stat] = 0;
+            }
+
         }
+
     });
 
     renderCoaches();
 }
 
-function addCoachChampionship(id){
+function deleteCoach(id){
 
-    coaches.forEach(coach => {
-        if(coach.id === id){
-            coach.championships++;
-        }
-    });
+    coaches = coaches.filter(coach => coach.id !== id);
 
     renderCoaches();
 }
@@ -613,42 +319,123 @@ function renderCoaches(){
 
         <div class="coach-card">
 
-            <h3>${coach.name}</h3>
+            <div class="coach-header">
 
-            <div class="coach-stats">
+                <h3>${coach.name}</h3>
 
-                <div class="stat-box">
-                    <strong>Wins</strong>
-                    <br>
-                    ${coach.wins}
-                </div>
-
-                <div class="stat-box">
-                    <strong>Losses</strong>
-                    <br>
-                    ${coach.losses}
-                </div>
-
-                <div class="stat-box">
-                    <strong>Titles</strong>
-                    <br>
-                    ${coach.championships}
-                </div>
+                <button 
+                    class="dropdown-btn"
+                    onclick="toggleCoach(${coach.id})"
+                >
+                    ${coach.open ? "Hide Legacy" : "Show Legacy"}
+                </button>
 
             </div>
 
-            <div class="small-buttons">
+            <div 
+                class="coach-body" 
+                style="display:${coach.open ? 'block' : 'none'}"
+            >
 
-                <button onclick="addCoachWin(${coach.id})">
-                    +1 Win
-                </button>
+                <div class="stat-grid">
 
-                <button onclick="addCoachLoss(${coach.id})">
-                    +1 Loss
-                </button>
+                    <!-- WINS -->
 
-                <button onclick="addCoachChampionship(${coach.id})">
-                    +1 Title
+                    <div class="stat-box">
+
+                        <h4>Wins</h4>
+
+                        <div class="stat-number">
+                            ${coach.wins}
+                        </div>
+
+                        <div class="small-buttons">
+
+                            <button 
+                                class="plus-btn"
+                                onclick="changeStat(${coach.id}, 'wins', 1)"
+                            >
+                                +1
+                            </button>
+
+                            <button 
+                                class="minus-btn"
+                                onclick="changeStat(${coach.id}, 'wins', -1)"
+                            >
+                                -1
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- LOSSES -->
+
+                    <div class="stat-box">
+
+                        <h4>Losses</h4>
+
+                        <div class="stat-number">
+                            ${coach.losses}
+                        </div>
+
+                        <div class="small-buttons">
+
+                            <button 
+                                class="plus-btn"
+                                onclick="changeStat(${coach.id}, 'losses', 1)"
+                            >
+                                +1
+                            </button>
+
+                            <button 
+                                class="minus-btn"
+                                onclick="changeStat(${coach.id}, 'losses', -1)"
+                            >
+                                -1
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CHAMPIONSHIPS -->
+
+                    <div class="stat-box">
+
+                        <h4>Championships</h4>
+
+                        <div class="stat-number">
+                            ${coach.championships}
+                        </div>
+
+                        <div class="small-buttons">
+
+                            <button 
+                                class="plus-btn"
+                                onclick="changeStat(${coach.id}, 'championships', 1)"
+                            >
+                                +1
+                            </button>
+
+                            <button 
+                                class="minus-btn"
+                                onclick="changeStat(${coach.id}, 'championships', -1)"
+                            >
+                                -1
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button 
+                    class="delete-btn"
+                    onclick="deleteCoach(${coach.id})"
+                >
+                    Delete Coach
                 </button>
 
             </div>
