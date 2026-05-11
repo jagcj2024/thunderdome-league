@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thunder Dome Basketball League - Coach Careers</title>
+<title>Thunder Dome Basketball League - Coach Career Tracker</title>
 
 <style>
 
 body{
     margin:0;
-    background:#0d0d0d;
+    background:#0f0f0f;
     color:white;
     font-family:Arial, Helvetica, sans-serif;
 }
@@ -26,8 +26,9 @@ header h1{
 }
 
 header p{
+    margin-top:10px;
+    color:#ffd4c4;
     font-size:20px;
-    color:#ffd9cc;
 }
 
 .container{
@@ -38,8 +39,8 @@ header p{
 
 .section{
     background:#1c1c1c;
-    padding:25px;
     border-radius:20px;
+    padding:25px;
     margin-bottom:25px;
 }
 
@@ -51,14 +52,14 @@ header p{
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
     gap:20px;
 }
 
 .card{
     background:#2b2b2b;
-    padding:20px;
     border-radius:20px;
+    padding:20px;
 }
 
 input{
@@ -67,7 +68,7 @@ input{
     margin-top:12px;
     border:none;
     border-radius:12px;
-    background:#3a3a3a;
+    background:#3b3b3b;
     color:white;
     font-size:16px;
     box-sizing:border-box;
@@ -81,7 +82,7 @@ button{
     border-radius:12px;
     background:red;
     color:white;
-    font-size:18px;
+    font-size:17px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -92,34 +93,65 @@ button:hover{
 
 .coach-card{
     background:linear-gradient(to right,#222,#333);
-    padding:20px;
-    border-radius:18px;
-    margin-top:15px;
     border-left:6px solid orange;
+    border-radius:20px;
+    padding:20px;
+    margin-top:15px;
 }
 
 .coach-card h3{
-    margin:0;
+    margin-top:0;
     color:orange;
-    font-size:28px;
+    font-size:30px;
 }
 
-.coach-stat{
+.stat{
     background:#444;
     padding:12px;
     border-radius:12px;
     margin-top:10px;
+    font-size:18px;
 }
 
-.leaderboard{
-    background:#262626;
-    padding:20px;
-    border-radius:20px;
+.button-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
     margin-top:15px;
 }
 
-.leaderboard h3{
+.champ-button{
+    background:gold;
+    color:black;
+}
+
+.champ-button:hover{
+    background:#ffd700;
+}
+
+.summary{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.summary-box{
+    background:#262626;
+    padding:20px;
+    border-radius:20px;
+    text-align:center;
+}
+
+.summary-box h3{
     color:orange;
+    margin:0;
+}
+
+.summary-box p{
+    font-size:40px;
+    font-weight:bold;
+    margin:10px 0 0 0;
 }
 
 </style>
@@ -129,14 +161,28 @@ button:hover{
 
 <header>
 <h1>THUNDER DOME BASKETBALL LEAGUE</h1>
-<p>Coach Career Universe</p>
+<p>Coach Career Tracker</p>
 </header>
 
 <div class="container">
 
+<div class="summary">
+
+<div class="summary-box">
+<h3>Total Coaches</h3>
+<p id="totalCoaches">0</p>
+</div>
+
+<div class="summary-box">
+<h3>Total Championships</h3>
+<p id="totalChampionships">0</p>
+</div>
+
+</div>
+
 <div class="section">
 
-<h2>Create Coach Career</h2>
+<h2>Create Coach</h2>
 
 <div class="grid">
 
@@ -146,23 +192,15 @@ button:hover{
 
 <input type="text" id="coachTeam" placeholder="Team">
 
-<input type="number" id="coachWins" placeholder="Career Wins">
-
-<input type="number" id="coachLosses" placeholder="Career Losses">
-
-<input type="number" id="coachChamps" placeholder="Championships">
-
-<input type="number" id="coachTechs" placeholder="Technical Fouls">
-
 <button onclick="createCoach()">
-Create Coach
+Create Coach Career
 </button>
 
 </div>
 
 <div class="card">
 
-<h2>Coach Records</h2>
+<h2>Coach Careers</h2>
 
 <div id="coachList"></div>
 
@@ -172,88 +210,142 @@ Create Coach
 
 </div>
 
-<div class="section">
-
-<h2>Legendary Coaches</h2>
-
-<div class="leaderboard">
-
-<h3>🏆 Most Championships</h3>
-
-<p>Marcus Vale — 11 Championships</p>
-<p>Troy Winters — 9 Championships</p>
-<p>Damien Frost — 8 Championships</p>
-
-</div>
-
-<div class="leaderboard">
-
-<h3>🔥 Most Career Wins</h3>
-
-<p>Marcus Vale — 2,214 Wins</p>
-<p>Troy Winters — 2,050 Wins</p>
-<p>Damien Frost — 1,998 Wins</p>
-
-</div>
-
-<div class="leaderboard">
-
-<h3>😡 Most Technical Fouls</h3>
-
-<p>Coach Marcus Vale — 96 Technical Fouls</p>
-<p>Coach Troy Winters — 88 Technical Fouls</p>
-
-</div>
-
-</div>
-
 </div>
 
 <script>
+
+let coaches = [];
+
+function updateSummary(){
+
+    document.getElementById("totalCoaches").innerText =
+        coaches.length;
+
+    let championships = 0;
+
+    coaches.forEach(coach => {
+        championships += coach.championships;
+    });
+
+    document.getElementById("totalChampionships").innerText =
+        championships;
+}
 
 function createCoach(){
 
     let name = document.getElementById("coachName").value;
     let team = document.getElementById("coachTeam").value;
-    let wins = document.getElementById("coachWins").value;
-    let losses = document.getElementById("coachLosses").value;
-    let champs = document.getElementById("coachChamps").value;
-    let techs = document.getElementById("coachTechs").value;
 
-    let html = `
-    
-    <div class="coach-card">
+    if(name === "" || team === ""){
+        alert("Enter coach name and team");
+        return;
+    }
 
-        <h3>${name}</h3>
+    let coach = {
+        id: Date.now(),
+        name:name,
+        team:team,
+        wins:0,
+        losses:0,
+        championships:0
+    };
 
-        <div class="coach-stat">
-            Team: ${team}
-        </div>
+    coaches.push(coach);
 
-        <div class="coach-stat">
-            Career Record: ${wins}-${losses}
-        </div>
-
-        <div class="coach-stat">
-            Championships: ${champs}
-        </div>
-
-        <div class="coach-stat">
-            Technical Fouls: ${techs}
-        </div>
-
-    </div>
-    
-    `;
-
-    document.getElementById("coachList").innerHTML += html;
+    renderCoaches();
 
     document.getElementById("coachName").value = "";
     document.getElementById("coachTeam").value = "";
-    document.getElementById("coachWins").value = "";
-    document.getElementById("coachLosses").value = "";
-    document.getElementById("coachChamps").value = "";
-    document.getElementById("coachTechs").value = "";
+}
+
+function addWin(id){
+
+    coaches.forEach(coach => {
+        if(coach.id === id){
+            coach.wins++;
+        }
+    });
+
+    renderCoaches();
+}
+
+function addLoss(id){
+
+    coaches.forEach(coach => {
+        if(coach.id === id){
+            coach.losses++;
+        }
+    });
+
+    renderCoaches();
+}
+
+function addChampionship(id){
+
+    coaches.forEach(coach => {
+        if(coach.id === id){
+            coach.championships++;
+        }
+    });
+
+    renderCoaches();
+}
+
+function renderCoaches(){
+
+    let html = "";
+
+    coaches.forEach(coach => {
+
+        html += `
+
+        <div class="coach-card">
+
+            <h3>${coach.name}</h3>
+
+            <div class="stat">
+                Team: ${coach.team}
+            </div>
+
+            <div class="stat">
+                Wins: ${coach.wins}
+            </div>
+
+            <div class="stat">
+                Losses: ${coach.losses}
+            </div>
+
+            <div class="stat">
+                Championships: ${coach.championships}
+            </div>
+
+            <div class="button-row">
+
+                <button onclick="addWin(${coach.id})">
+                    Add Win
+                </button>
+
+                <button onclick="addLoss(${coach.id})">
+                    Add Loss
+                </button>
+
+            </div>
+
+            <button class="champ-button"
+                onclick="addChampionship(${coach.id})">
+
+                Add Championship
+
+            </button>
+
+        </div>
+
+        `;
+    });
+
+    document.getElementById("coachList").innerHTML = html;
+
+    updateSummary();
 }
 
 </script>
