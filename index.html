@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thunder Dome Basketball League</title>
+<title>Thunder Dome Basketball League - Coach Careers</title>
 
 <style>
 
 body{
     margin:0;
-    background:#0f0f0f;
+    background:#0d0d0d;
     color:white;
-    font-family:Arial;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 header{
@@ -25,6 +25,11 @@ header h1{
     font-size:50px;
 }
 
+header p{
+    font-size:20px;
+    color:#ffd9cc;
+}
+
 .container{
     width:95%;
     margin:auto;
@@ -32,15 +37,21 @@ header h1{
 }
 
 .section{
-    background:#1f1f1f;
+    background:#1c1c1c;
     padding:25px;
     border-radius:20px;
     margin-bottom:25px;
 }
 
+.section h2{
+    margin-top:0;
+    color:orange;
+    font-size:36px;
+}
+
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
     gap:20px;
 }
 
@@ -52,22 +63,25 @@ header h1{
 
 input{
     width:100%;
-    padding:12px;
-    margin-top:10px;
+    padding:14px;
+    margin-top:12px;
     border:none;
-    border-radius:10px;
-    background:#444;
+    border-radius:12px;
+    background:#3a3a3a;
     color:white;
+    font-size:16px;
+    box-sizing:border-box;
 }
 
 button{
     width:100%;
-    padding:12px;
+    padding:14px;
     margin-top:15px;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     background:red;
     color:white;
+    font-size:18px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -76,42 +90,36 @@ button:hover{
     background:#ff5500;
 }
 
-.scoreboard{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:black;
-    border-radius:25px;
-    padding:30px;
+.coach-card{
+    background:linear-gradient(to right,#222,#333);
+    padding:20px;
+    border-radius:18px;
+    margin-top:15px;
+    border-left:6px solid orange;
 }
 
-.team{
-    text-align:center;
-    width:40%;
-}
-
-.score{
-    font-size:80px;
+.coach-card h3{
+    margin:0;
     color:orange;
-    font-weight:bold;
+    font-size:28px;
 }
 
-.middle{
-    text-align:center;
+.coach-stat{
+    background:#444;
+    padding:12px;
+    border-radius:12px;
+    margin-top:10px;
 }
 
-.rivalry{
-    background:linear-gradient(to right,#8b0000,#ff5500);
+.leaderboard{
+    background:#262626;
     padding:20px;
     border-radius:20px;
     margin-top:15px;
 }
 
-.player{
-    background:#333;
-    padding:15px;
-    border-radius:15px;
-    margin-top:10px;
+.leaderboard h3{
+    color:orange;
 }
 
 </style>
@@ -121,65 +129,42 @@ button:hover{
 
 <header>
 <h1>THUNDER DOME BASKETBALL LEAGUE</h1>
-<p>Basketball Dynasty Simulator</p>
+<p>Coach Career Universe</p>
 </header>
 
 <div class="container">
 
 <div class="section">
 
-<h2>Big Box Scoreboard</h2>
-
-<div class="scoreboard">
-
-<div class="team">
-<h1 id="homeTeam">HOME</h1>
-<div class="score" id="homeScore">0</div>
-
-<button onclick="addHomePoints()">+2 Points</button>
-<button onclick="homeFT()">+1 Free Throw</button>
-</div>
-
-<div class="middle">
-<h1>VS</h1>
-<h2>Thunder Dome Arena</h2>
-</div>
-
-<div class="team">
-<h1 id="awayTeam">AWAY</h1>
-<div class="score" id="awayScore">0</div>
-
-<button onclick="addAwayPoints()">+2 Points</button>
-<button onclick="awayFT()">+1 Free Throw</button>
-</div>
-
-</div>
-
-</div>
-
-<div class="section">
-
-<h2>Create Teams</h2>
+<h2>Create Coach Career</h2>
 
 <div class="grid">
 
 <div class="card">
 
-<input id="homeInput" placeholder="Home Team">
+<input type="text" id="coachName" placeholder="Coach Name">
 
-<button onclick="setHomeTeam()">
-Set Home Team
+<input type="text" id="coachTeam" placeholder="Team">
+
+<input type="number" id="coachWins" placeholder="Career Wins">
+
+<input type="number" id="coachLosses" placeholder="Career Losses">
+
+<input type="number" id="coachChamps" placeholder="Championships">
+
+<input type="number" id="coachTechs" placeholder="Technical Fouls">
+
+<button onclick="createCoach()">
+Create Coach
 </button>
 
 </div>
 
 <div class="card">
 
-<input id="awayInput" placeholder="Away Team">
+<h2>Coach Records</h2>
 
-<button onclick="setAwayTeam()">
-Set Away Team
-</button>
+<div id="coachList"></div>
 
 </div>
 
@@ -189,58 +174,34 @@ Set Away Team
 
 <div class="section">
 
-<h2>Create Players</h2>
+<h2>Legendary Coaches</h2>
 
-<div class="grid">
+<div class="leaderboard">
 
-<div class="card">
+<h3>🏆 Most Championships</h3>
 
-<input id="playerName" placeholder="Player Name">
-<input id="playerTeam" placeholder="Team">
-<input id="playerPPG" placeholder="PPG">
-
-<button onclick="createPlayer()">
-Create Player
-</button>
+<p>Marcus Vale — 11 Championships</p>
+<p>Troy Winters — 9 Championships</p>
+<p>Damien Frost — 8 Championships</p>
 
 </div>
 
-<div class="card">
+<div class="leaderboard">
 
-<h3>Player List</h3>
+<h3>🔥 Most Career Wins</h3>
 
-<div id="playerList"></div>
-
-</div>
-
-</div>
+<p>Marcus Vale — 2,214 Wins</p>
+<p>Troy Winters — 2,050 Wins</p>
+<p>Damien Frost — 1,998 Wins</p>
 
 </div>
 
-<div class="section">
+<div class="leaderboard">
 
-<h2>Franchise Rivalries</h2>
+<h3>😡 Most Technical Fouls</h3>
 
-<div class="grid">
-
-<div class="card">
-
-<input id="teamOne" placeholder="Team One">
-<input id="teamTwo" placeholder="Team Two">
-<input id="winsOne" placeholder="Team One Wins">
-<input id="winsTwo" placeholder="Team Two Wins">
-
-<button onclick="createRivalry()">
-Create Rivalry
-</button>
-
-</div>
-
-<div class="card">
-
-<div id="rivalryList"></div>
-
-</div>
+<p>Coach Marcus Vale — 96 Technical Fouls</p>
+<p>Coach Troy Winters — 88 Technical Fouls</p>
 
 </div>
 
@@ -250,72 +211,49 @@ Create Rivalry
 
 <script>
 
-let homeScore = 0;
-let awayScore = 0;
+function createCoach(){
 
-function addHomePoints(){
-    homeScore += 2;
-    document.getElementById("homeScore").innerText = homeScore;
-}
-
-function addAwayPoints(){
-    awayScore += 2;
-    document.getElementById("awayScore").innerText = awayScore;
-}
-
-function homeFT(){
-    homeScore += 1;
-    document.getElementById("homeScore").innerText = homeScore;
-}
-
-function awayFT(){
-    awayScore += 1;
-    document.getElementById("awayScore").innerText = awayScore;
-}
-
-function setHomeTeam(){
-    let team = document.getElementById("homeInput").value;
-    document.getElementById("homeTeam").innerText = team;
-}
-
-function setAwayTeam(){
-    let team = document.getElementById("awayInput").value;
-    document.getElementById("awayTeam").innerText = team;
-}
-
-function createPlayer(){
-
-    let name = document.getElementById("playerName").value;
-    let team = document.getElementById("playerTeam").value;
-    let ppg = document.getElementById("playerPPG").value;
+    let name = document.getElementById("coachName").value;
+    let team = document.getElementById("coachTeam").value;
+    let wins = document.getElementById("coachWins").value;
+    let losses = document.getElementById("coachLosses").value;
+    let champs = document.getElementById("coachChamps").value;
+    let techs = document.getElementById("coachTechs").value;
 
     let html = `
-    <div class="player">
+    
+    <div class="coach-card">
+
         <h3>${name}</h3>
-        <p>Team: ${team}</p>
-        <p>PPG: ${ppg}</p>
+
+        <div class="coach-stat">
+            Team: ${team}
+        </div>
+
+        <div class="coach-stat">
+            Career Record: ${wins}-${losses}
+        </div>
+
+        <div class="coach-stat">
+            Championships: ${champs}
+        </div>
+
+        <div class="coach-stat">
+            Technical Fouls: ${techs}
+        </div>
+
     </div>
+    
     `;
 
-    document.getElementById("playerList").innerHTML += html;
-}
+    document.getElementById("coachList").innerHTML += html;
 
-function createRivalry(){
-
-    let one = document.getElementById("teamOne").value;
-    let two = document.getElementById("teamTwo").value;
-    let wins1 = document.getElementById("winsOne").value;
-    let wins2 = document.getElementById("winsTwo").value;
-
-    let html = `
-    <div class="rivalry">
-        <h2>${one} VS ${two}</h2>
-        <p>${one} Wins: ${wins1}</p>
-        <p>${two} Wins: ${wins2}</p>
-    </div>
-    `;
-
-    document.getElementById("rivalryList").innerHTML += html;
+    document.getElementById("coachName").value = "";
+    document.getElementById("coachTeam").value = "";
+    document.getElementById("coachWins").value = "";
+    document.getElementById("coachLosses").value = "";
+    document.getElementById("coachChamps").value = "";
+    document.getElementById("coachTechs").value = "";
 }
 
 </script>
